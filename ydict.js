@@ -72,15 +72,27 @@ var print = function (info) {
     });
 };
 
-var lookup = function (text) {
+exports.lookup = function (text, callback) {
     fetch(text, function (err, data) {
         if (err) {
-            console.err("Some error happened:", err);
+            callback(err);
         } else {
-            print(parse(data));
+            callback(null, parse(data));
         }
     });
 };
 
-var args = process.argv.splice(2);
-lookup(args.join(" "));
+var main = function (){
+    var args = process.argv.splice(2);
+    exports.lookup(args.join(" "), function (err, info) {
+        if (err) {
+            console.error("Some error happened:", err);
+        } else {
+            print(info);
+        }
+    });
+};
+
+if (require.main === module) {
+    main();
+}
