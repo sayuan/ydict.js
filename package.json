@@ -1,0 +1,17 @@
+{
+  "name": "ydict.js",
+  "version": "0.0.1",
+  "main": "ydict.js",
+  "description": "Yet another ydict implmentation in node.js",
+  "dependencies": {
+    "cheerio": "~0.13.1",
+    "colors": "~0.6.2",
+    "request": "~2.33.0"
+  },
+  "devDependencies": {},
+  "author": "Shiao-An Yuan <shiao.an.yuan@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sayuan/ydict.js"
+  }
+}
