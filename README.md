@@ -3,7 +3,18 @@
 Yet another ydict implmentation in node.js
 
 ## Installation
-- npm install -g
+- Install from repository
+```shell
+[sudo] npm install -g
+```
 
-## basic usage
-- `ydict.js <word or phrase>`
+- Install from NPM
+```shell
+[sudo] npm install -g ydict.js
+```
+
+## Usage
+
+```shell
+ydict.js <word or phrase>
+```
