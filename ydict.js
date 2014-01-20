@@ -14,13 +14,24 @@ var fetch = function (text, callback) {
     });
 };
 
+var parse_examples = function ($) {
+    var rs = [];
+    $.find(".sample").each(function (i, elem) {
+        var r = {
+            "english": this.find(".example_sentence").text(),
+            "chinese": this.find(".example_sentence").next().text(),
+        };
+        rs.push(r);
+    });
+    return rs;
+};
+
 var parse_explanations = function ($) {
     var rs = [];
     $.find("li").each(function (i, elem) {
         var r = {
             "explanation": this.find(".explanation").text(),
-            "sample": this.find(".example_sentence").text(),
-            "sampleTrans": this.find(".example_sentence").next().text(),
+            "examples": parse_examples(this),
         };
         rs.push(r);
     });
@@ -62,11 +73,12 @@ var print = function (info) {
             console.log("%s %s", type.abbr.red.bold, type.desc.red.bold);
         }
         for (var i=0; i<type.explantions.length; i++) {
-            var t = type.explantions[i];
-            console.log("  %d. %s", i+1, t.explanation);
-            if (t.sample) {
-                console.log("     %s", t.sample.cyan.bold);
-                console.log("     %s", t.sampleTrans.green);
+            var exp = type.explantions[i];
+            console.log("  %d. %s", i+1, exp.explanation);
+            for (var j=0; j<exp.examples.length; j++) {
+                var ex = exp.examples[j];
+                console.log("     %s", ex.english.cyan.bold);
+                console.log("     %s", ex.chinese.green);
             }
         }
     });
