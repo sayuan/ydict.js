@@ -65,6 +65,10 @@ var parse = function (data) {
 };
 
 var print = function (info) {
+    if (!info.word) {
+        console.log("查無此字".red.bold);
+        return 3;
+    }
     if (info.kk) {
         console.log("KK: [%s]", info.kk.bold);
     }
@@ -82,6 +86,7 @@ var print = function (info) {
             }
         }
     });
+    return 0;
 };
 
 exports.lookup = function (text, callback) {
@@ -94,13 +99,18 @@ exports.lookup = function (text, callback) {
     });
 };
 
-var main = function (){
+var main = function () {
     var args = process.argv.splice(2);
+    if (args.length === 0) {
+        console.error("Error: Word or phrase needed.");
+        process.exit(1);
+    }
     exports.lookup(args.join(" "), function (err, info) {
         if (err) {
             console.error("Some error happened:", err);
+            process.exit(2);
         } else {
-            print(info);
+            process.exit(print(info));
         }
     });
 };
