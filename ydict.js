@@ -3,7 +3,7 @@
 
 var request = require("request");
 var cheerio = require("cheerio");
-var colors = require('colors');
+var colors = require("colors");
 
 var fetch = function (text, callback) {
     var options = {
@@ -55,11 +55,11 @@ var parse = function (data) {
 
 var print = function (info) {
     if (info.kk) {
-        console.log('KK: [%s]', info.kk.bold);
+        console.log("KK: [%s]", info.kk.bold);
     }
     info.types.forEach(function (type) {
         if (type.abbr) {
-            console.log('%s %s', type.abbr.red.bold, type.desc.red.bold);
+            console.log("%s %s", type.abbr.red.bold, type.desc.red.bold);
         }
         for (var i=0; i<type.explantions.length; i++) {
             var t = type.explantions[i];
