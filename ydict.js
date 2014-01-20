@@ -59,16 +59,13 @@ var parse = function (data) {
         "word": $.find(".title_term").children().first().text(),
         "kk": $.find(".proun_value").eq(0).text().slice(1, -1),
         "types": parse_types($),
+        "suggesstion": $.find("h2").find("i").text(),
     };
 
     return info;
 };
 
 var print = function (info) {
-    if (!info.word) {
-        console.log("查無此字".red.bold);
-        return 3;
-    }
     if (info.kk) {
         console.log("KK: [%s]", info.kk.bold);
     }
@@ -105,12 +102,22 @@ var main = function () {
         console.error("Error: Word or phrase needed.");
         process.exit(1);
     }
-    exports.lookup(args.join(" "), function (err, info) {
+    var text = args.join(" ");
+    exports.lookup(text, function callback(err, info) {
         if (err) {
             console.error("Some error happened:", err);
             process.exit(2);
         } else {
-            process.exit(print(info));
+            if (info.word) {
+                print(info);
+            } else if (info.suggesstion) {
+                console.warn("拼字檢查: %s -> %s".red.bold,
+                        text, info.suggesstion);
+                exports.lookup(info.suggesstion, callback);
+            } else {
+                console.log("查無此字".red.bold);
+                process.exit(3);
+            }
         }
     });
 };
