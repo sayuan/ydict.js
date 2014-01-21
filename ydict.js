@@ -14,7 +14,7 @@ var fetch = function (text, callback) {
     });
 };
 
-var parse_keywords = function ($) {
+var parseKeywords = function ($) {
     var rs = [];
     $.find("b").each(function (i, elem) {
         rs.push(this.text());
@@ -22,40 +22,40 @@ var parse_keywords = function ($) {
     return rs;
 };
 
-var parse_examples = function ($) {
+var parseExamples = function ($) {
     var rs = [];
     $.find(".sample").each(function (i, elem) {
         var node = this.find(".example_sentence");
         var r = {
             "english": node.text(),
             "chinese": node.next().text(),
-            "keywords": parse_keywords(node),
+            "keywords": parseKeywords(node),
         };
         rs.push(r);
     });
     return rs;
 };
 
-var parse_explanations = function ($) {
+var parseExplanations = function ($) {
     var rs = [];
     $.find("li").each(function (i, elem) {
         var r = {
             "explanation": this.find(".explanation").text(),
-            "examples": parse_examples(this),
+            "examples": parseExamples(this),
         };
         rs.push(r);
     });
     return rs;
 };
 
-var parse_types = function ($) {
+var parseTypes = function ($) {
     var rs = [];
     $.find(".result_cluster_first").find(".explanation_pos_wrapper")
             .each(function (i, elem) {
         var r = {
             "abbr": this.find(".pos_abbr").text(),
             "desc": this.find(".pos_desc").text(),
-            "explantions": parse_explanations(this),
+            "explantions": parseExplanations(this),
         };
         rs.push(r);
     });
@@ -68,7 +68,7 @@ var parse = function (data) {
     var info = {
         "word": $.find(".title_term").children().first().text(),
         "kk": $.find(".proun_value").eq(0).text().slice(1, -1),
-        "types": parse_types($),
+        "types": parseTypes($),
         "suggesstion": $.find("h2").find("i").text(),
     };
 
