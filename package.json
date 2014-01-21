@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "main": "ydict.js",
   "description": "Yet another ydict implmentation in node.js",
+  "license": "MIT",
   "bin": {
       "ydict.js": "./ydict.js"
   },
