@@ -14,12 +14,22 @@ var fetch = function (text, callback) {
     });
 };
 
+var parse_keywords = function ($) {
+    var rs = [];
+    $.find("b").each(function (i, elem) {
+        rs.push(this.text());
+    });
+    return rs;
+};
+
 var parse_examples = function ($) {
     var rs = [];
     $.find(".sample").each(function (i, elem) {
+        var node = this.find(".example_sentence");
         var r = {
-            "english": this.find(".example_sentence").text(),
-            "chinese": this.find(".example_sentence").next().text(),
+            "english": node.text(),
+            "chinese": node.next().text(),
+            "keywords": parse_keywords(node),
         };
         rs.push(r);
     });
@@ -65,6 +75,10 @@ var parse = function (data) {
     return info;
 };
 
+var highlighter = function (pre, cur) {
+    return pre.replace(cur, cur.bold);
+};
+
 var print = function (info) {
     if (info.kk) {
         console.log("KK: [%s]", info.kk.bold);
@@ -78,7 +92,8 @@ var print = function (info) {
             console.log("  %d. %s", i+1, exp.explanation);
             for (var j=0; j<exp.examples.length; j++) {
                 var ex = exp.examples[j];
-                console.log("     %s", ex.english.cyan.bold);
+                console.log("     %s",
+                        ex.keywords.reduce(highlighter, ex.english).cyan);
                 console.log("     %s", ex.chinese.green);
             }
         }
