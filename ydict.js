@@ -79,7 +79,10 @@ var highlighter = function (pre, cur) {
     return pre.replace(cur, cur.bold);
 };
 
-var display = function (info) {
+var display = function (text, info) {
+    if (text !== info.word) {
+        console.log(info.word.cyan.bold.underline);
+    }
     if (info.kk) {
         console.log("KK: [%s]", info.kk.bold);
     }
@@ -124,11 +127,7 @@ var main = function () {
             process.exit(2);
         } else {
             if (info.word) {
-                if (text!==info.word) {
-                    console.warn("正式用法: %s -> %s".red.bold,
-                            text, info.word);
-                }
-                display(info);
+                display(text, info);
             } else if (info.suggesstion) {
                 console.warn("拼字檢查: %s -> %s".red.bold,
                         text, info.suggesstion);
