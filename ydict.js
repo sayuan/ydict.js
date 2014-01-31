@@ -4,6 +4,9 @@
 var request = require("request");
 var cheerio = require("cheerio");
 var colors = require("colors");
+var path = require("path");
+var fs = require("fs");
+var childProcess = require('child_process');
 
 var fetch = function (text, callback) {
     var options = {
@@ -68,6 +71,7 @@ var parse = function (data) {
     var info = {
         "word": $.find(".title_term").children().first().text(),
         "kk": $.find(".proun_value").eq(0).text().slice(1, -1),
+        "audio": $.find(".source").eq(0).attr("data-src"),
         "types": parseTypes($),
         "suggesstion": $.find("h2").find("i").text(),
     };
@@ -104,6 +108,19 @@ var display = function (text, info) {
     return 0;
 };
 
+var play = function (config, info) {
+    if (config.playerCmd) {
+        childProcess.exec(config.playerCmd + " " + info.audio);
+    }
+};
+
+var loadConfig = function () {
+    var name = (process.platform=="win32") ? "USERPROFILE" : "HOME";
+    var file = path.join(process.env[name], ".ydict.json");
+    if (!fs.existsSync(file)) return {};
+    return require(file);
+}
+
 exports.lookup = function (text, callback) {
     fetch(text, function (err, data) {
         if (err) {
@@ -120,6 +137,7 @@ var main = function () {
         console.error("Error: Word or phrase needed.");
         process.exit(1);
     }
+    var config = loadConfig();
     var text = args.join(" ");
     exports.lookup(text, function callback(err, info) {
         if (err) {
@@ -127,6 +145,7 @@ var main = function () {
             process.exit(2);
         } else {
             if (info.word) {
+                play(config, info);
                 display(text, info);
             } else if (info.suggesstion) {
                 console.warn("拼字檢查: %s -> %s".red.bold,

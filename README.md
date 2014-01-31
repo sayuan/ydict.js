@@ -18,3 +18,13 @@ Yet another ydict implmentation in node.js
 ```shell
 ydict.js <word or phrase>
 ```
+
+## Playing Sound
+
+Add a json file named `.ydict.json` in home dir and specify the player command.
+
+```json
+{
+    "playerCmd": "mplayer"
+}
+```
