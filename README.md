@@ -2,6 +2,8 @@
 
 Yet another ydict implmentation in node.js
 
+![screenschot](https://github.com/sayuan/ydict.js/raw/master/screenshot.png)
+
 ## Installation
 - Install from repository
 ```shell
