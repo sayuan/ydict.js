@@ -9,8 +9,9 @@ var fs = require("fs");
 var childProcess = require('child_process');
 
 var fetch = function (text, callback) {
+    var encoded = encodeURIComponent(text)
     var options = {
-        "url": "http://tw.dictionary.yahoo.com/dictionary?p="+text,
+        "url": "http://tw.dictionary.yahoo.com/dictionary?p="+encoded,
     };
     request(options, function(error, response, body) {
         callback(error, body);
