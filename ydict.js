@@ -81,7 +81,8 @@ var parse = function (data) {
 };
 
 var highlighter = function (pre, cur) {
-    return pre.replace(cur, cur.bold);
+    var re = new RegExp('\\b'+cur+'\\b')
+    return pre.replace(re, cur.bold);
 };
 
 var display = function (text, info) {
