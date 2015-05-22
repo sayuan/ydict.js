@@ -59,11 +59,15 @@ var parseTypes = function ($, cur) {
 };
 
 var parseAudio = function ($, cur) {
-    var obj = JSON.parse(cur.find("#iconStyle").text());
-    if (obj["sound_url_1"].length === 0) return null;
-    return obj["sound_url_1"].filter(function (elem) {
-        return ('mp3' in elem);
-    })[0]['mp3'];
+    try {
+        var obj = JSON.parse(cur.find("#iconStyle").text());
+        if (obj["sound_url_1"].length === 0) return null;
+        return obj["sound_url_1"].filter(function (elem) {
+            return ('mp3' in elem);
+        })[0]['mp3'];
+    } catch(e) {
+        return null;
+    }
 };
 
 var parse = function (data) {
