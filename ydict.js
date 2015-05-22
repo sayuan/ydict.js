@@ -12,6 +12,9 @@ var fetch = function (text, callback) {
     var encoded = encodeURIComponent(text)
     var options = {
         "url": "http://tw.dictionary.search.yahoo.com/search?p="+encoded,
+        headers: {
+            'User-Agent': "Mozilla/5.0"
+        }
     };
     request(options, function(error, response, body) {
         callback(error, body);
@@ -72,13 +75,13 @@ var parseAudio = function ($, cur) {
 
 var parse = function (data) {
     var $ = cheerio.load(data);
-    var root = $("#main");
+    var root = $("#results");
     return {
         "word": root.find("#term").first().text(),
         "pronunciation": root.find("#pronunciation_pos").text(),
         "audio": parseAudio($, root),
         "types": parseTypes($, root),
-        "suggesstion": root.find("h2").find("i").text(),
+        "suggesstion": root.find(".VertQuerySuggestion").find("a").first().text(),
     };
 };
 
