@@ -12,9 +12,10 @@ var fetch = function (text, callback) {
     var encoded = encodeURIComponent(text)
     var options = {
         "url": "http://tw.dictionary.search.yahoo.com/search?p="+encoded,
-        headers: {
-            'User-Agent': "Mozilla/5.0"
-        }
+        "headers": {
+            // Suggestion only shown if user-agent set.
+            'User-Agent': "Mozilla/5.0",
+        },
     };
     request(options, function(error, response, body) {
         callback(error, body);
