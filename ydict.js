@@ -17,9 +17,7 @@ var fetch = function (text, callback) {
             'User-Agent': "Mozilla/5.0",
         },
     };
-    request(options, function(error, response, body) {
-        callback(error, body);
-    });
+    request(options, callback);
 };
 
 var parseKeywords = function ($, cur) {
@@ -128,9 +126,11 @@ var loadConfig = function () {
 }
 
 exports.lookup = function (text, callback) {
-    fetch(text, function (err, data) {
+    fetch(text, function (err, response, data) {
         if (err) {
             callback(err);
+        } else if (response.statusCode != 200) {
+            callback("Status " + response.statusCode);
         } else {
             callback(null, parse(data));
         }
@@ -145,9 +145,9 @@ var main = function () {
     }
     var config = loadConfig();
     var text = args.join(" ");
-    exports.lookup(text, function callback(err, info) {
+    exports.lookup(text, function callback (err, info) {
         if (err) {
-            console.error("Some error happened:", err);
+            console.error("Error:", err);
             process.exit(2);
         } else {
             if (info.word) {
