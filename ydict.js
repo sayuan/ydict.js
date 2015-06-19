@@ -62,7 +62,7 @@ var parseTypes = function ($, cur) {
 
 var parseAudio = function ($, cur) {
     try {
-        var obj = JSON.parse(cur.find("#iconStyle").text());
+        var obj = JSON.parse(cur.find("#iconStyle").first().text());
         if (obj["sound_url_1"].length === 0) return null;
         return obj["sound_url_1"].filter(function (elem) {
             return ('mp3' in elem);
