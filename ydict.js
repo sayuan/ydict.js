@@ -21,43 +21,50 @@ var fetch = function (text, callback) {
 };
 
 var parseKeywords = function ($, cur) {
-    return cur.find("b b").map(function (i, elem) {
+    return cur.find("b").map(function (i, elem) {
         return $(this).text();
     }).get();
 };
 
 var parseExamples = function ($, cur) {
-    return cur.find(".example_translation")
-    .filter(function (i, elem) {
-        return $(this).text().length > 0;
-    })
-    .map(function (i, elem) {
-        var parent = $(this).parent();
-        $(this).remove();
+    return cur.find("p").map(function (i, elem) {
+        var english = $(this).text().replace(/[^\x00-\x7F]/g, "").trim()
+
         return {
-            "english": parent.text(),
-            "chinese": $(this).text(),
-            "keywords": parseKeywords($, parent),
+            "english": english,
+            "chinese": $(this).text().replace(english, "").trim(),
+            "keywords": parseKeywords($, $(this)),
         }
     }).get();
 };
 
 var parseExplanations = function ($, cur) {
-    return cur.find("li").map(function (i, elem) {
+    return cur.map(function (elem) {
         return {
-            "explanation": $(this).find("h4").text().replace(/\d+\. /, ""),
-            "examples": parseExamples($, $(this)),
+            "explanation": $(elem).find("span").first().text().replace(/\d+\. /, ""),
+            "examples": parseExamples($, $(elem)),
         };
-    }).get();
+    });
 };
 
 var parseTypes = function ($, cur) {
-    return cur.find(".lst").first().find(".compArticleList").map(function (i, elem) {
+    var elems = [];
+    cur.find(".tab-content-explanation .compList li").each(function (i, elem) {
+        if ($(this).find(".tabs-pos_type").length) {
+            elems.push({
+                "desc": $(this).text(),
+                "explanations": [],
+            });
+        } else {
+            elems[elems.length - 1].explanations.push(this);
+        }
+    });
+    return elems.map(function (desc) {
         return {
-            "desc": $(this).prev().find(".title").text(),
-            "explanations": parseExplanations($, $(this)),
+            "desc": desc.desc,
+            "explanations": parseExplanations($, desc.explanations),
         };
-    }).get();
+    });
 };
 
 var parseAudio = function ($, cur) {
@@ -74,11 +81,12 @@ var parseAudio = function ($, cur) {
 
 var parse = function (data) {
     var $ = cheerio.load(data);
-    var root = $("#results");
+    var root = $("#web");
     return {
-        "word": root.find("#term").first().text(),
-        "pronunciation": root.find("#pronunciation_pos").text(),
-        "audio": parseAudio($, root),
+        "word": root.find(".first .dictionaryWordCard .compTitle .title span").first().text(),
+        "pronunciation": root.find(".first .dictionaryWordCard .compList").first().text(),
+        "explanation": root.find(".first .dictionaryWordCard .compList .dictionaryExplanation").first().text(),
+        // "audio": parseAudio($, root),
         "types": parseTypes($, root),
         "suggesstion": root.find(".VertQuerySuggestion").find("a").first().text(),
     };
@@ -95,6 +103,9 @@ var display = function (text, info) {
     }
     if (info.pronunciation) {
         console.log(info.pronunciation.replace(/\[([^\]]+)\]/g, ": ["+"$1".bold+"]"));
+    }
+    if (info.explanation) {
+        console.log(info.explanation);
     }
     info.types.forEach(function (type) {
         console.log("%s", type.desc.red.bold);
