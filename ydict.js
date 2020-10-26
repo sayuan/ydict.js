@@ -27,7 +27,7 @@ var parseKeywords = function ($, cur) {
 };
 
 var parseExamples = function ($, cur) {
-    return cur.find("p").map(function (i, elem) {
+    return cur.map(function (i, elem) {
         var english = $(this).text().replace(/[^\x00-\x7F]/g, "").trim()
 
         return {
@@ -39,32 +39,23 @@ var parseExamples = function ($, cur) {
 };
 
 var parseExplanations = function ($, cur) {
-    return cur.map(function (elem) {
+    return cur.find("li").map(function (i, elem) {
         return {
-            "explanation": $(elem).find("span").first().text().replace(/\d+\. /, ""),
-            "examples": parseExamples($, $(elem)),
+            "explanation": $(this).children().eq(1).text(),
+            "examples": parseExamples($, $(this).children().eq(2)),
         };
     });
 };
 
 var parseTypes = function ($, cur) {
     var elems = [];
-    cur.find(".tab-content-explanation .compList li").each(function (i, elem) {
-        if ($(this).find(".tabs-pos_type").length) {
-            elems.push({
-                "desc": $(this).text(),
-                "explanations": [],
-            });
-        } else {
-            elems[elems.length - 1].explanations.push(this);
-        }
+    cur.find(".tab-content-explanation .compTitle").each(function (i, elem) {
+        elems.push({
+            "desc": $(this).text(),
+            "explanations": parseExplanations($, $(this).next()),
+        });
     });
-    return elems.map(function (desc) {
-        return {
-            "desc": desc.desc,
-            "explanations": parseExplanations($, desc.explanations),
-        };
-    });
+    return elems;
 };
 
 var parseAudio = function ($, cur) {
@@ -85,7 +76,7 @@ var parse = function (data) {
     return {
         "word": root.find(".first .dictionaryWordCard .compTitle .title span").first().text(),
         "pronunciation": root.find(".first .dictionaryWordCard .compList").first().text(),
-        "explanation": root.find(".first .dictionaryWordCard .compList .dictionaryExplanation").first().text(),
+        "explanation": null,
         // "audio": parseAudio($, root),
         "types": parseTypes($, root),
         "suggesstion": root.find(".VertQuerySuggestion").find("a").first().text(),
