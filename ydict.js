@@ -20,54 +20,22 @@ var fetch = function (text, callback) {
     request(options, callback);
 };
 
-var parseKeywords = function ($, cur) {
-    return cur.find("b").map(function (i, elem) {
-        return $(this).text();
-    }).get();
-};
-
-var parseExamples = function ($, cur) {
-    return cur.map(function (i, elem) {
-        var english = $(this).text().replace(/[^\x00-\x7F]/g, "").trim()
-
-        return {
-            "english": english,
-            "chinese": $(this).text().replace(english, "").trim(),
-            "keywords": parseKeywords($, $(this)),
-        }
-    }).get();
-};
-
-var parseExplanations = function ($, cur) {
-    return cur.find("li").map(function (i, elem) {
-        return {
-            "explanation": $(this).children().eq(1).text(),
-            "examples": parseExamples($, $(this).children().eq(2)),
-        };
-    });
-};
-
 var parseTypes = function ($, cur) {
     var elems = [];
-    cur.find(".tab-content-explanation .compTitle").each(function (i, elem) {
+    cur.find(".dictionaryWordCard .compList").eq(1).find("li").each(function (i, elem) {
         elems.push({
-            "desc": $(this).text(),
-            "explanations": parseExplanations($, $(this).next()),
+            "desc": $(this).children().eq(0).text(),
+            "explanation": $(this).children().eq(1).text(),
         });
     });
     return elems;
 };
 
-var parseAudio = function ($, cur) {
-    try {
-        var obj = JSON.parse(cur.find("#iconStyle").first().text());
-        if (obj["sound_url_1"].length === 0) return null;
-        return obj["sound_url_1"].filter(function (elem) {
-            return ('mp3' in elem);
-        })[0]['mp3'];
-    } catch(e) {
-        return null;
-    }
+var parseAudio = function (data) {
+    var re = /https:\\\/\\\/s\.yimg\.com\\\/bg\\\/dict\\\/dreye\\\/live\\\/f\\\/([a-z]+)\.mp3/;
+    var found = data.match(re);
+    if (!found) return null;
+    return found[0].replaceAll("\\", "");
 };
 
 var parse = function (data) {
@@ -77,9 +45,8 @@ var parse = function (data) {
         "word": root.find(".first .dictionaryWordCard .compTitle .title span").first().text(),
         "pronunciation": root.find(".first .dictionaryWordCard .compList").first().text(),
         "explanation": null,
-        // "audio": parseAudio($, root),
+        "audio": parseAudio(data),
         "types": parseTypes($, root),
-        "suggesstion": root.find(".VertQuerySuggestion").find("a").first().text(),
     };
 };
 
@@ -99,17 +66,7 @@ var display = function (text, info) {
         console.log(info.explanation);
     }
     info.types.forEach(function (type) {
-        console.log("%s", type.desc.red.bold);
-        for (var i=0; i<type.explanations.length; i++) {
-            var exp = type.explanations[i];
-            console.log("  %d. %s", i+1, exp.explanation);
-            for (var j=0; j<exp.examples.length; j++) {
-                var ex = exp.examples[j];
-                console.log("     %s",
-                        ex.keywords.reduce(highlighter, ex.english).cyan);
-                console.log("     %s", ex.chinese.green);
-            }
-        }
+        console.log("%s %s", type.desc.red.bold, type.explanation);
     });
     return 0;
 };
