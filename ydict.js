@@ -35,7 +35,7 @@ var parseAudio = function (data) {
     var re = /https:\\\/\\\/s\.yimg\.com\\\/bg\\\/dict\\\/dreye\\\/live\\\/f\\\/([a-z]+)\.mp3/;
     var found = data.match(re);
     if (!found) return null;
-    return found[0].replaceAll("\\", "");
+    return found[0].replace(/\\/g, '');
 };
 
 var parse = function (data) {
