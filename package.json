@@ -1,6 +1,6 @@
 {
   "name": "ydict.js",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "main": "ydict.js",
   "description": "Yet another ydict implmentation in node.js",
   "license": "MIT",
